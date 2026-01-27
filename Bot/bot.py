@@ -3,7 +3,7 @@ import sqlite3
 from datetime import datetime
 
 # Конфигурация бота
-TOKEN = "7895480716:AAFJXwNGvpCjhTWZ9TdwnbycUnAKl2wIees"
+TOKEN = "TOKEN"
 TEAM_NAME = "CTFTeam"
 ADMIN_PASSWORD = "qwerty123"
 admins = []
