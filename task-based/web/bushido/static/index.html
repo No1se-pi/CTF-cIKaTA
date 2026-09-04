@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="theme-color" content="#020302" />
+    <title>The Old Man's Garden</title>
+    <script type="module">
+      await import("/static/assets/index-Bq9Xbu6W.js")
+
+      const game = globalThis.gardenGame
+      const endRun = game.endRun.bind(game)
+      game.endRun = async function () {
+        if (!this.state?.winner) {
+          return endRun()
+        }
+        this.mode = "ending"
+        this.camera.detachControl()
+        this.hint.classList.remove("visible")
+        this.overlay.classList.remove("sleeping", "waking", "clear")
+        this.overlay.classList.add("ending")
+        this.status.style.zIndex = "11"
+        const message = this.state.victory
+          ? `${this.state.message} Flag: ${this.state.flag}`
+          : this.state.message
+        this.setStatus(message)
+      }
+
+      // A helper for issuing raw moves from the browser console.
+      globalThis.playGardenMove = async function (move) {
+        const response = await fetch("/game/move", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ move }),
+        })
+        const result = await response.json()
+        if (!response.ok) {
+          throw new Error(result.error || "Failed to load the result")
+        }
+        game.state = result
+        game.rebuildPosition()
+        if (result.is_checkmate || result.is_stalemate) {
+          await game.endRun()
+        }
+        return result
+      }
+    </script>
+    <link rel="modulepreload" crossorigin href="/static/assets/babylon-BGxV5sJH.js">
+    <link rel="stylesheet" crossorigin href="/static/assets/index-Ctvm5tnJ.css">
+  </head>
+  <body>
+    <canvas id="game" tabindex="0"></canvas>
+    <div id="status" aria-live="polite"></div>
+    <div id="hint"></div>
+    <div id="blackout" class="sleeping"></div>
+  </body>
+</html>

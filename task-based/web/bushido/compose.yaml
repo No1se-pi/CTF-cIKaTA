@@ -1,0 +1,8 @@
+services:
+  shogi-app:
+    build: .
+    ports:
+      - "8001:8001"
+    environment:
+      - FLAG=${FLAG:-cIKaTA{ded_igraet_ne_po_pravilam}}
+    restart: unless-stopped
